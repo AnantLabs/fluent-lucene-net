@@ -1,0 +1,8 @@
+relre:.*/bin/.*
+relre:.*/obj/.*
+relre:.*/_ReSharper.*
+relre:.*\.suo
+relre:.*/Debug/.*
+relre:.*/Release/.*
+relre:.*\.user
+relre:.*\.orig
