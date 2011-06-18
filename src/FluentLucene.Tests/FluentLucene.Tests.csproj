@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Infrastructure\ComponentContainerTests.cs" />
     <Compile Include="Mapping\FieldMemberTests.cs" />
     <Compile Include="Mapping\MemberBaseTests.cs" />
     <Compile Include="Mapping\PropertyMemberTests.cs" />

@@ -4,5 +4,6 @@ namespace FluentLucene.Tests
     {
         public const string Reflection = "Reflection";
         public const string Mappings = "Mappings";
+        public const string Infrastructure = "Infrastructure";
     }
 }
