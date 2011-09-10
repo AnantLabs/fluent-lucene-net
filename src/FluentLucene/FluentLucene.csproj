@@ -47,6 +47,7 @@
     <Compile Include="Infrastructure\ComponentRegistration.cs" />
     <Compile Include="Infrastructure\ComponentResolutionError.cs" />
     <Compile Include="Infrastructure\ComponentResolutionException.cs" />
+    <Compile Include="Infrastructure\IServiceLocator.cs" />
     <Compile Include="Infrastructure\ServiceLocator.cs" />
     <Compile Include="MappingModel\DocumentMapping.cs" />
     <Compile Include="MappingModel\FieldMapping.cs" />
