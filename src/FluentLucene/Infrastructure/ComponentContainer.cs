@@ -44,7 +44,7 @@ namespace FluentLucene.Infrastructure
             EnsureNotRegistered(typeof (TInterface));
 
             // Add a registration for that type
-            Registrations.Add(typeof(TInterface), new ComponentRegistration(typeof(TImplementation), ComponentLifetime.Singleton));
+            Registrations.Add(typeof (TInterface), ComponentRegistration.CreateSingleton(typeof (TImplementation)));
         }
 
         /// <summary>
@@ -67,7 +67,32 @@ namespace FluentLucene.Infrastructure
             EnsureNotRegistered(typeof(TInterface));
 
             // Add a registration for that type
-            Registrations.Add(typeof(TInterface), new ComponentRegistration(typeof(TImplementation), ComponentLifetime.Transient));
+            Registrations.Add(typeof(TInterface), ComponentRegistration.CreateTransient(typeof(TImplementation)));
+        }
+
+        /// <summary>
+        /// Registers a component by specifying the instance to use
+        /// </summary>
+        /// <param name="instance">The instance to user</param>
+        /// <typeparam name="T">The instance of the component</typeparam>
+        public void Instance<T>(T instance)
+        {
+            Instance<T, T>(instance);
+        }
+
+        /// <summary>
+        /// Registers a component by specifying the instance to use
+        /// </summary>
+        /// <param name="instance">The instance to user</param>
+        /// <typeparam name="TInterface">The type of the interface</typeparam>
+        /// <typeparam name="TImplementation">The type of the implementation</typeparam>
+        public void Instance<TInterface, TImplementation>(TInterface instance) where TImplementation : TInterface
+        {
+            // Ensure the type was not already registered
+            EnsureNotRegistered(typeof(TInterface));
+
+            // Add a registration for that type
+            Registrations.Add(typeof(TInterface), ComponentRegistration.CreateInstance(typeof(TImplementation), instance));
         }
 
         /// <summary>
@@ -79,9 +104,7 @@ namespace FluentLucene.Infrastructure
             // Ensure the type was not already registered
             if (Registrations.ContainsKey(type))
             {
-                throw new ComponentResolutionException(
-                    string.Format("The type {0} was already registered", type),
-                    ComponentResolutionError.AlreadyRegistered);
+                throw ComponentResolutionException.AlreadyRegistered(type);
             }
         }
 
@@ -117,19 +140,25 @@ namespace FluentLucene.Infrastructure
             // Get the registration for the given type
             ComponentRegistration registration;
 
+            // Ensure the component is registered
             if (!Registrations.TryGetValue(type, out registration))
             {
-                throw new ComponentResolutionException(
-                    string.Format("Unable to resolve type {0}. The component was not registered.", type),
-                    ComponentResolutionError.NotRegistered);
+                throw ComponentResolutionException.NotRegistered(type);
             }
+
             // Try and retrieve the instance as a singleton instance when appropriate
-            if (registration.Lifetime == ComponentLifetime.Singleton)
+            if (registration.Singleton)
             {
                 object singleton;
 
                 if (Singletons.TryGetValue(type, out singleton)) 
                     return singleton;
+            }
+
+            // Use the instance if provided
+            if (registration.Instance != null)
+            {
+                return registration.Instance;
             }
 
             // Find the constructor for the given type
@@ -138,9 +167,7 @@ namespace FluentLucene.Infrastructure
             // Ensure there is an eligible constructor
             if (ctor == null)
             {
-                throw new ComponentResolutionException(
-                    string.Format("Unable to find a suitable constructor for type {0}", type),
-                    ComponentResolutionError.ConstructorNotFound);
+                throw ComponentResolutionException.ConstructorNotFound(type);
             }
 
             // Resolve all of the dependencies
@@ -162,11 +189,7 @@ namespace FluentLucene.Infrastructure
                 // Ensure there is no circular dependency
                 if (pendingResolutions.ContainsKey(dependency))
                 {
-                    throw new ComponentResolutionException(
-                        ComponentResolutionException.FormatMessage(
-                            string.Format("A circular dependency was detected within {0}", type),
-                            dependency.ToString()),
-                        ComponentResolutionError.CircularDependency);
+                    throw ComponentResolutionException.CircularDependency(type, dependency);
                 }
 
                 try
@@ -177,10 +200,7 @@ namespace FluentLucene.Infrastructure
                 catch (ComponentResolutionException ex)
                 {
                     // Wrap an throw the exception
-                    throw new ComponentResolutionException(
-                        string.Format("Unable to resolve dependencies for {0}", type), 
-                        ex,
-                        ComponentResolutionError.DependencyResolution);
+                    throw ComponentResolutionException.DependencyResolution(type, ex);
                 }
             }
 
@@ -188,7 +208,7 @@ namespace FluentLucene.Infrastructure
             var instance = ctor.Invoke(resolvedDependencies);
 
             // Register the instance as a singleton when appropriate
-            if (registration.Lifetime == ComponentLifetime.Singleton)
+            if (registration.Singleton)
                 Singletons.Add(type, instance);
 
             // Return the newly created instance

@@ -133,6 +133,19 @@ namespace FluentLucene.Tests.Infrastructure
             AssertThrowsWithRootCause(() => Container.Get<IF>(), ComponentResolutionError.CircularDependency);
         }
 
+        [Test]
+        public void Get_Instance_ReturnsInstance()
+        {
+            var expected = new A();
+
+            Container.Instance<IA, A>(expected);
+
+            var actual = Container.Get<IA>();
+
+            Assert.That(actual, Is.SameAs(expected));
+        }
+
+
         private static void AssertThrowsWithRootCause(Action action, ComponentResolutionError rootCause)
         {
             Assert.That(() => action(),

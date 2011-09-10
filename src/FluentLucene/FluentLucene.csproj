@@ -45,8 +45,8 @@
   <ItemGroup>
     <Compile Include="Infrastructure\ComponentContainer.cs" />
     <Compile Include="Infrastructure\ComponentRegistration.cs" />
+    <Compile Include="Infrastructure\ComponentResolutionError.cs" />
     <Compile Include="Infrastructure\ComponentResolutionException.cs" />
-    <Compile Include="Infrastructure\ComponentLifetime.cs" />
     <Compile Include="Infrastructure\ServiceLocator.cs" />
     <Compile Include="MappingModel\DocumentMapping.cs" />
     <Compile Include="MappingModel\FieldMapping.cs" />

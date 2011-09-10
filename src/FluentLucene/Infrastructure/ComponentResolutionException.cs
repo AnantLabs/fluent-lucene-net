@@ -3,16 +3,6 @@ using System.Text;
 
 namespace FluentLucene.Infrastructure
 {
-    internal enum ComponentResolutionError
-    {
-        None = 0,
-        AlreadyRegistered,
-        NotRegistered,
-        ConstructorNotFound,
-        DependencyResolution,
-        CircularDependency
-    }
-
     /// <summary>
     /// Represents an exception with component resolution.
     /// </summary>
@@ -50,6 +40,42 @@ namespace FluentLucene.Infrastructure
             sb.AppendLine(message);
             sb.Append((innerMessage ?? string.Empty).Replace(Environment.NewLine, Environment.NewLine + ".. "));
             return sb.ToString();
+        }
+
+        public static ComponentResolutionException NotRegistered(Type type)
+        {
+            throw new ComponentResolutionException(
+                    string.Format("Unable to resolve type {0}. The component was not registered.", type),
+                    ComponentResolutionError.NotRegistered);
+        }
+
+        public static ComponentResolutionException AlreadyRegistered(Type type)
+        {
+            throw new ComponentResolutionException(
+                    string.Format("The type {0} was already registered", type),
+                    ComponentResolutionError.AlreadyRegistered);
+        }
+
+        public static ComponentResolutionException ConstructorNotFound(Type type)
+        {
+            throw new ComponentResolutionException(
+                    string.Format("Unable to find a suitable constructor for type {0}", type),
+                    ComponentResolutionError.ConstructorNotFound);
+        }
+
+        public static ComponentResolutionException DependencyResolution(Type type, Exception innerException)
+        {
+            throw new ComponentResolutionException(
+                string.Format("Unable to resolve dependencies for {0}", type),
+                innerException,
+                ComponentResolutionError.DependencyResolution);
+        }
+
+        public static ComponentResolutionException CircularDependency(Type type, Type dependency)
+        {
+            return new ComponentResolutionException(
+                FormatMessage(string.Format("A circular dependency was detected within {0}", type), dependency.ToString()),
+                ComponentResolutionError.CircularDependency);
         }
     }
 }

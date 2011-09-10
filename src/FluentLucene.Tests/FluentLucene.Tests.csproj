@@ -58,7 +58,6 @@
     <Compile Include="Mapping\IdentityBuilderTests.cs" />
     <Compile Include="Mapping\MappingTestsBase.cs" />
     <Compile Include="Mapping\PropertyBuilderTests.cs" />
-    <Compile Include="Mapping\SampleMember.cs" />
     <Compile Include="Mapping\SortBuilderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestCategories.cs" />
