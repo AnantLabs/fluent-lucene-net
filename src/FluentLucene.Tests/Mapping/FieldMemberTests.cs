@@ -10,7 +10,7 @@ namespace FluentLucene.Tests.Mapping
     // ReSharper disable ConvertToConstant.Local
     // ReSharper disable ClassNeverInstantiated.Local
 
-    [Category(TestCategories.Reflection)]
+    [Category("Reflection")]
     [TestFixture]
     public class FieldMemberTests
     {

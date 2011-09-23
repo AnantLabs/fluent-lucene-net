@@ -7,7 +7,7 @@ namespace FluentLucene.Tests.Infrastructure
     // ReSharper disable InconsistentNaming
     // ReSharper disable ConvertToConstant.Local
 
-    [Category(TestCategories.Infrastructure)]
+    [Category("Infrastructure")]
     [TestFixture]
     public class ComponentContainerTests
     {

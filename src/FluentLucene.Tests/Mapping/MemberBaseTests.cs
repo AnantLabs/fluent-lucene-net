@@ -11,7 +11,7 @@ namespace FluentLucene.Tests.Mapping
     // ReSharper disable ClassNeverInstantiated.Local
     // ReSharper disable UnusedAutoPropertyAccessor.Local
 
-    [Category(TestCategories.Reflection)]
+    [Category("Reflection")]
     [TestFixture]
     public class MemberBaseTests
     {

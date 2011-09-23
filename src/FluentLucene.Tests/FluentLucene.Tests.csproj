@@ -59,8 +59,8 @@
     <Compile Include="Mapping\MappingTestsBase.cs" />
     <Compile Include="Mapping\PropertyBuilderTests.cs" />
     <Compile Include="Mapping\SortBuilderTests.cs" />
+    <Compile Include="Materialize\SimpleMaterializerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestCategories.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FluentLucene\FluentLucene.csproj">

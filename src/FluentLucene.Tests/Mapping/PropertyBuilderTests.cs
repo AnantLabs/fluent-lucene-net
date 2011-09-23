@@ -10,7 +10,7 @@ namespace FluentLucene.Tests.Mapping
     // ReSharper disable InconsistentNaming
     // ReSharper disable ConvertToConstant.Local
 
-    [Category(TestCategories.Mappings)]
+    [Category("Mappings")]
     [TestFixture]
     internal class PropertyBuilderTests : MappingTestsBase
     {

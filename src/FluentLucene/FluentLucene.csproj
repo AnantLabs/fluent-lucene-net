@@ -79,6 +79,9 @@
     <Compile Include="Mapping\Resolution\SimpleMappingResolverBase.cs" />
     <Compile Include="Mapping\SortBuilder.cs" />
     <Compile Include="Mapping\StoreBuilder.cs" />
+    <Compile Include="Materialize\FieldHelper.cs" />
+    <Compile Include="Materialize\SimpleMaterializer.cs" />
+    <Compile Include="Materialize\EntityActivator.cs" />
     <Compile Include="Materialize\IMaterializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Mapping\SearchMap.cs" />
