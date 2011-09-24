@@ -9,7 +9,7 @@ namespace FluentLucene.Tests.Materialize
 
     [Category("Materialize")]
     [TestFixture]
-    public class SimpleMaterializerTests
+    public class SimpleMaterializerParseValueTests
     {
         private void AssertParseValue<T>(string stringValue, T expected)
         {

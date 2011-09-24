@@ -38,6 +38,13 @@ namespace FluentLucene.Materialize
             return result;
         }
 
+        /// <summary>
+        /// Parses a string value into the correct type.
+        /// </summary>
+        /// <param name="stringValue">The string value</param>
+        /// <param name="mappingType">The expected type of the value</param>
+        /// <returns>The parsed value</returns>
+        /// <exception cref="NotSupportedException">If the type of the value is not supported</exception>
         public object ParseValue(string stringValue, Type mappingType)
         {
             // TODO : Build an infrastructure for mappings .NET types and values in the index (much like NHibernate's IType)

@@ -59,6 +59,7 @@
     <Compile Include="Mapping\MappingTestsBase.cs" />
     <Compile Include="Mapping\PropertyBuilderTests.cs" />
     <Compile Include="Mapping\SortBuilderTests.cs" />
+    <Compile Include="Materialize\SimpleMaterializerParseValueTests.cs" />
     <Compile Include="Materialize\SimpleMaterializerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

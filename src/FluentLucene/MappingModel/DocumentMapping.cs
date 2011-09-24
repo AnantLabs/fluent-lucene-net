@@ -23,23 +23,27 @@ namespace FluentLucene.MappingModel
         /// <param name="fields">The fields mappings</param>
         public DocumentMapping(Type documentType, IdentityMapping identity, IEnumerable<FieldMapping> fields)
         {
-            DocumentType = documentType;
-            Identity = identity;
+            this.documentType = documentType;
+            this.identity = identity;
             this.fields.AddRange(fields);
 
             allFields.Add(identity);
             allFields.AddRange(this.fields);
         }
 
-        /// <summary>
-        /// Gets or sets the type of the document mapped
-        /// </summary>
-        public Type DocumentType { get; private set; }
+        private readonly Type documentType;
 
         /// <summary>
-        /// Gets or sets the mapping for the identity
+        /// Gets the type of the document mapped
         /// </summary>
-        public IdentityMapping Identity { get; private set; }
+        public Type DocumentType { get { return documentType; } }
+
+        private readonly IdentityMapping identity;
+
+        /// <summary>
+        /// Gets the mapping for the identity
+        /// </summary>
+        public IdentityMapping Identity { get { return identity; } }
 
         /// <summary>
         /// Backing field for the field mappings
