@@ -16,30 +16,8 @@ namespace FluentLucene.Tests.Materialize
             var materializer = new SimpleMaterializer();
             var actual = materializer.ParseValue(stringValue, typeof(T));
 
-            if (expected == null)
-            {
-                Assert.That(actual, Is.Null);
-                return;
-            }
-            else
-            {
-                Assert.That(actual, Is.Not.Null);
-
-                var actualType = actual.GetType();
-                var expectedType = typeof (T);
-
-                if (expectedType.IsGenericType)
-                {
-                    var genericType = expectedType.GetGenericTypeDefinition();
-
-                    if (genericType == typeof(Nullable<>))
-                    {
-                        expectedType = Nullable.GetUnderlyingType(expectedType);
-                    }
-                }
-
-                Assert.That(actualType, Is.EqualTo(expectedType));
-            }
+            Assert.That(actual, Is.TypeOf<T>());
+            Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
@@ -51,13 +29,18 @@ namespace FluentLucene.Tests.Materialize
         [Test]
         public void ParseValue_NullableWithValue_ReturnsValue()
         {
-            AssertParseValue<int?>("15", 15);
+            var actual = new SimpleMaterializer().ParseValue("15", typeof (int?));
+
+            Assert.That(actual, Is.TypeOf<int>().Or.TypeOf<int?>());
+            Assert.That(actual, Is.EqualTo(15));
         }
 
         [Test]
         public void ParseValue_NullableNull_ReturnsNull()
         {
-            AssertParseValue<int?>("", null);
+            var actual = new SimpleMaterializer().ParseValue(null, typeof(int?));
+
+            Assert.That(actual, Is.Null);
         }
 
         [Test]
@@ -137,7 +120,7 @@ namespace FluentLucene.Tests.Materialize
         {
             AssertParseValue(
                 "2009-06-15T20:45:30.0900019",
-                new DateTime(2009, 6, 15, 20, 45, 30).AddTicks(19));
+                new DateTime(2009, 6, 15, 20, 45, 30, 90).AddTicks(19));
         }
 
         [Test]
@@ -157,7 +140,7 @@ namespace FluentLucene.Tests.Materialize
         [Test]
         public void ParseValue_Enum_ReturnsValue()
         {
-            AssertParseValue("Boolean", TypeCode.Boolean);
+            AssertParseValue("Empty", TypeCode.Empty);
         }
 
         [Test]
