@@ -20,6 +20,7 @@ namespace FluentLucene.Tests.Infrastructure
         }
 
         #region Component structure
+        // Components are defined below
         // A
         // B -> (A)
         // C -> (A, A)
@@ -145,6 +146,55 @@ namespace FluentLucene.Tests.Infrastructure
             Assert.That(actual, Is.SameAs(expected));
         }
 
+        [Test]
+        public void Get_TransientWithFactoryMethod_InvokesFactoryMethodEachTime()
+        {
+            var invocations = 0;
+            var expected = new A();
+            Container.Transient<IA>(() => { invocations++; return expected; });
+
+            var actual1 = Container.Get<IA>();
+            var actual2 = Container.Get<IA>();
+
+            Assert.That(invocations, Is.EqualTo(2));
+            Assert.That(actual1, Is.SameAs(expected));
+            Assert.That(actual2, Is.SameAs(expected));
+        }
+
+        [Test]
+        public void Get_TransientWithFactoryMethod_InvokesFactoryMethodLazily()
+        {
+            var invocations = 0;
+            var expected = new A();
+            Container.Transient<IA>(() => { invocations++; return expected; });
+
+            Assert.That(invocations, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void Get_SingletonWithFactoryMethod_InvokesFactoryMethodOnce()
+        {
+            var invocations = 0;
+            var expected = new A();
+            Container.Singleton<IA>(() => { invocations++; return expected; });
+
+            var actual1 = Container.Get<IA>();
+            var actual2 = Container.Get<IA>();
+
+            Assert.That(invocations, Is.EqualTo(1));
+            Assert.That(actual1, Is.SameAs(expected));
+            Assert.That(actual2, Is.SameAs(expected));
+        }
+
+        [Test]
+        public void Get_SingletonWithFactoryMethod_InvokesFactoryMethodLazily()
+        {
+            var invocations = 0;
+            var expected = new A();
+            Container.Singleton<IA>(() => { invocations++; return expected; });
+
+            Assert.That(invocations, Is.EqualTo(0));
+        }
 
         private static void AssertThrowsWithRootCause(Action action, ComponentResolutionError rootCause)
         {

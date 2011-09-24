@@ -48,6 +48,20 @@ namespace FluentLucene.Infrastructure
         }
 
         /// <summary>
+        /// Registers a singleton component, created at most once when requested, using the provided factory method
+        /// </summary>
+        /// <param name="factoryMethod">The factory method to use in order to create the component</param>
+        /// <typeparam name="T">The type of the component</typeparam>
+        public void Singleton<T>(Func<T> factoryMethod)
+        {
+            // Ensure the type was not already registered
+            EnsureNotRegistered(typeof(T));
+
+            // Add a registration for that type
+            Registrations.Add(typeof(T), ComponentRegistration.CreateSingleton(typeof(T), () => factoryMethod()));
+        }
+
+        /// <summary>
         /// Registers a transient component, to be created each time it is requested
         /// </summary>
         /// <typeparam name="T">The type of the component</typeparam>
@@ -68,6 +82,20 @@ namespace FluentLucene.Infrastructure
 
             // Add a registration for that type
             Registrations.Add(typeof(TInterface), ComponentRegistration.CreateTransient(typeof(TImplementation)));
+        }
+
+        /// <summary>
+        /// Registers a transient component, to be created each time it is requested using the provided factory method
+        /// </summary>
+        /// <param name="factoryMethod">The factory method to use in order to create the component</param>
+        /// <typeparam name="T">The type of the component</typeparam>
+        public void Transient<T>(Func<T> factoryMethod)
+        {
+            // Ensure the type was not already registered
+            EnsureNotRegistered(typeof(T));
+
+            // Add a registration for that type
+            Registrations.Add(typeof(T), ComponentRegistration.CreateTransient(typeof(T), () => factoryMethod()));
         }
 
         /// <summary>
@@ -155,57 +183,66 @@ namespace FluentLucene.Infrastructure
                     return singleton;
             }
 
-            // Use the instance if provided
+            object instance;
+
             if (registration.Instance != null)
             {
-                return registration.Instance;
+                // Use the instance if provided
+                instance = registration.Instance;
             }
-
-            // Find the constructor for the given type
-            var ctor = GetConstructor(registration.Type);
-
-            // Ensure there is an eligible constructor
-            if (ctor == null)
+            else if (registration.FactoryMethod != null)
             {
-                throw ComponentResolutionException.ConstructorNotFound(type);
+                // Use the factory method provided
+                instance = registration.FactoryMethod();
             }
-
-            // Resolve all of the dependencies
-            var dependencies = ResolveDependencies(ctor).ToArray();
-
-            // Create a dictionary of seen type that are not yet resolved
-            pendingResolutions = pendingResolutions ?? new Dictionary<Type, ComponentRegistration>();
-
-            // Add an entry for the current type in the pending resolutions
-            pendingResolutions.Add(type, registration);
-
-            // The list of resolved dependencies
-            var resolvedDependencies = new object[dependencies.Length];
-            var currentDependencyIndex = 0;
-
-            // For every dependency
-            foreach (var dependency in dependencies)
+            else
             {
-                // Ensure there is no circular dependency
-                if (pendingResolutions.ContainsKey(dependency))
+                // Find the constructor for the given type
+                var ctor = GetConstructor(registration.Type);
+
+                // Ensure there is an eligible constructor
+                if (ctor == null)
                 {
-                    throw ComponentResolutionException.CircularDependency(type, dependency);
+                    throw ComponentResolutionException.ConstructorNotFound(type);
                 }
 
-                try
+                // Resolve all of the dependencies
+                var dependencies = ResolveDependencies(ctor).ToArray();
+
+                // Create a dictionary of seen type that are not yet resolved
+                pendingResolutions = pendingResolutions ?? new Dictionary<Type, ComponentRegistration>();
+
+                // Add an entry for the current type in the pending resolutions
+                pendingResolutions.Add(type, registration);
+
+                // The list of resolved dependencies
+                var resolvedDependencies = new object[dependencies.Length];
+                var currentDependencyIndex = 0;
+
+                // For every dependency
+                foreach (var dependency in dependencies)
                 {
-                    // Create an instance of the dependency recursively
-                    resolvedDependencies[currentDependencyIndex++] = GetInternal(dependency, pendingResolutions);
+                    // Ensure there is no circular dependency
+                    if (pendingResolutions.ContainsKey(dependency))
+                    {
+                        throw ComponentResolutionException.CircularDependency(type, dependency);
+                    }
+
+                    try
+                    {
+                        // Create an instance of the dependency recursively
+                        resolvedDependencies[currentDependencyIndex++] = GetInternal(dependency, pendingResolutions);
+                    }
+                    catch (ComponentResolutionException ex)
+                    {
+                        // Wrap an throw the exception
+                        throw ComponentResolutionException.DependencyResolution(type, ex);
+                    }
                 }
-                catch (ComponentResolutionException ex)
-                {
-                    // Wrap an throw the exception
-                    throw ComponentResolutionException.DependencyResolution(type, ex);
-                }
+
+                // Create an instance of the type using the constructor obtained before
+                instance = ctor.Invoke(resolvedDependencies);
             }
-
-            // Create an instance of the type using the constructor obtained before
-            var instance = ctor.Invoke(resolvedDependencies);
 
             // Register the instance as a singleton when appropriate
             if (registration.Singleton)
