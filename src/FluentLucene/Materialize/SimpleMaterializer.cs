@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using FluentLucene.MappingModel;
+using FluentLucene.Types;
 using Lucene.Net.Documents;
 
 namespace FluentLucene.Materialize
@@ -26,11 +27,26 @@ namespace FluentLucene.Materialize
             // Set the value of all mapped fields
             foreach (var map in mapping.AllFieldLikeMappings)
             {
-                var field = document.GetField(map.Name);
+                var field = document.GetFieldable(map.Name);
 
                 if (field != null)
                 {
-                    var value = ParseValue(field.StringValue(), map.Type);
+                    object value;
+
+                    #region PoC of the IType infrastructure
+
+                    if (map.Type == typeof(int))
+                    {
+                        value = new Int32Type().GetValue(field);
+                    }
+
+                    #endregion
+
+                    else
+                    {
+                        value = ParseValue(field.StringValue(), map.Type);
+                    }
+                    
                     map.SetValue(result, value);
                 }
             }
