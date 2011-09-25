@@ -33,7 +33,8 @@ namespace FluentLucene.Types
         /// </summary>
         /// <param name="fieldable">The field in which to set the value</param>
         /// <param name="value">The .NET value to set in the field</param>
-        void SetValue(Fieldable fieldable, object value);
+        /// <returns>true if the value was set; false if the value was not set and the field should be ignored (not added to a document)</returns>
+        bool SetValue(Fieldable fieldable, object value);
 
         /// <summary>
         /// Gets the implementation of <see cref="Fieldable"/> that this type uses

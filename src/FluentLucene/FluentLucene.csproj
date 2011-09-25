@@ -84,10 +84,26 @@
     <Compile Include="Materialize\IMaterializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Mapping\SearchMap.cs" />
+    <Compile Include="Types\BooleanType.cs" />
+    <Compile Include="Types\ByteType.cs" />
+    <Compile Include="Types\CharType.cs" />
+    <Compile Include="Types\DateTimeType.cs" />
+    <Compile Include="Types\DecimalType.cs" />
+    <Compile Include="Types\DoubleType.cs" />
+    <Compile Include="Types\EnumType.cs" />
     <Compile Include="Types\FieldType.cs" />
+    <Compile Include="Types\Int16Type.cs" />
     <Compile Include="Types\Int32Type.cs" />
+    <Compile Include="Types\Int64Type.cs" />
     <Compile Include="Types\IType.cs" />
     <Compile Include="Types\NumericFieldType.cs" />
+    <Compile Include="Types\SByteType.cs" />
+    <Compile Include="Types\SingleType.cs" />
+    <Compile Include="Types\StringType.cs" />
+    <Compile Include="Types\TimeSpanType.cs" />
+    <Compile Include="Types\UInt16Type.cs" />
+    <Compile Include="Types\UInt32Type.cs" />
+    <Compile Include="Types\UInt64Type.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

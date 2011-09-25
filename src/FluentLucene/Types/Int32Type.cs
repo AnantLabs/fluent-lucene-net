@@ -1,3 +1,4 @@
+using System.Globalization;
 using Lucene.Net.Documents;
 
 namespace FluentLucene.Types
@@ -5,16 +6,16 @@ namespace FluentLucene.Types
     /// <summary>
     /// Mapping for <see cref="int"/>s.
     /// </summary>
-    internal class Int32Type : NumericFieldType<int>
+    internal class Int32Type : FieldType<int>
     {
-        protected override int GetValueInternal(NumericField field)
+        protected override int GetValueInternal(Field field)
         {
-            return (int)field.GetNumericValue();
+            return int.Parse(field.StringValue(), CultureInfo.InvariantCulture);
         }
 
-        protected override void SetValueInternal(NumericField field, int value)
+        protected override void SetValueInternal(Field field, int value)
         {
-            field.SetIntValue(value);
+            field.SetValue(value.ToString(CultureInfo.InvariantCulture));
         }
     }
 }

@@ -1,7 +1,6 @@
 using System;
 using System.Globalization;
 using FluentLucene.MappingModel;
-using FluentLucene.Types;
 using Lucene.Net.Documents;
 
 namespace FluentLucene.Materialize
@@ -31,22 +30,7 @@ namespace FluentLucene.Materialize
 
                 if (field != null)
                 {
-                    object value;
-
-                    #region PoC of the IType infrastructure
-
-                    if (map.Type == typeof(int))
-                    {
-                        value = new Int32Type().GetValue(field);
-                    }
-
-                    #endregion
-
-                    else
-                    {
-                        value = ParseValue(field.StringValue(), map.Type);
-                    }
-                    
+                    var value = ParseValue(field.StringValue(), map.Type);
                     map.SetValue(result, value);
                 }
             }

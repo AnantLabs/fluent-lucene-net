@@ -19,6 +19,7 @@ namespace FluentLucene.Types
         /// <returns>The .NET value that was stored in the field</returns>
         public object GetValue(Fieldable fieldable)
         {
+            if (string.IsNullOrEmpty(fieldable.StringValue())) return null;
             return GetValueInternal((NumericField)fieldable);
         }
 
@@ -28,9 +29,12 @@ namespace FluentLucene.Types
         /// </summary>
         /// <param name="fieldable">The field in which to set the value</param>
         /// <param name="value">The .NET value to set in the field</param>
-        public void SetValue(Fieldable fieldable, object value)
+        /// <returns>true if the value was set; false if the value was not set and the field should be ignored (not added to a document)</returns>
+        public bool SetValue(Fieldable fieldable, object value)
         {
+            if (value == null) return false;
             SetValueInternal((NumericField)fieldable, (T)value);
+            return true;
         }
 
         /// <summary>
