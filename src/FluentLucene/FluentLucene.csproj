@@ -87,6 +87,9 @@
     <Compile Include="Types\BooleanType.cs" />
     <Compile Include="Types\ByteType.cs" />
     <Compile Include="Types\CharType.cs" />
+    <Compile Include="Types\ConvertLex.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Types\DateTimeType.cs" />
     <Compile Include="Types\DecimalType.cs" />
     <Compile Include="Types\DoubleType.cs" />
