@@ -40,5 +40,11 @@ namespace FluentLucene.Types
         /// Gets the implementation of <see cref="Fieldable"/> that this type uses
         /// </summary>
         Type FieldableType { get; }
+
+        /// <summary>
+        /// Gets whether or not values set using this type are lexicographically ordered. That means, whether or
+        /// not this type produces fields that are sutable for sorting and for range queries.
+        /// </summary>
+        bool IsLexicographicallyOrdered { get; }
     }
 }

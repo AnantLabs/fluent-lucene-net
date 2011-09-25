@@ -17,5 +17,7 @@ namespace FluentLucene.Types
         {
             field.SetValue(value.ToString(CultureInfo.InvariantCulture));
         }
+
+        public override bool IsLexicographicallyOrdered { get { return false; } }
     }
 }

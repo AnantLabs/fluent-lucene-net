@@ -26,5 +26,7 @@ namespace FluentLucene.Types
         {
             field.SetValue(value.ToString());
         }
+
+        public override bool IsLexicographicallyOrdered { get { return true; } }
     }
 }

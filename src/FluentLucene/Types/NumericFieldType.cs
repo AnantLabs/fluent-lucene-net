@@ -43,6 +43,12 @@ namespace FluentLucene.Types
         public Type FieldableType { get { return typeof(NumericField); } }
 
         /// <summary>
+        /// Gets whether or not values set using this type are lexicographically ordered. That means, whether or
+        /// not this type produces fields that are sutable for sorting and for range queries.
+        /// </summary>
+        public abstract bool IsLexicographicallyOrdered { get; }
+
+        /// <summary>
         /// Typesafe version of <see cref="GetValue"/>
         /// </summary>
         protected abstract T GetValueInternal(NumericField field);
