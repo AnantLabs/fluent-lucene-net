@@ -12,14 +12,14 @@ namespace FluentLucene.Tests.Materialize
 
     [Category("Types")]
     [TestFixture]
-    public class TypeProviderTests
+    public class TypeFactoryTests
     {
-        private TypeProvider TypeProvider;
+        private TypeFactory TypeFactory;
 
         [SetUp]
         public void SetUp()
         {
-            TypeProvider = new TypeProvider();
+            TypeFactory = new TypeFactory();
         }
 
         private void AssertAllTypesSupported(IEnumerable<Type> types)
@@ -30,7 +30,7 @@ namespace FluentLucene.Tests.Materialize
             {
                 var clrType = type;
 
-                var mappingType = TypeProvider.GetFor(clrType);
+                var mappingType = TypeFactory.GetFor(clrType);
                 
                 Assert.True(
                     clrType.IsAssignableFrom(mappingType.ClrType), 
@@ -47,7 +47,7 @@ namespace FluentLucene.Tests.Materialize
         [Test]
         public void GetFor_EnumType_ReturnsMappingType()
         {
-            var mappingType = TypeProvider.GetFor(typeof (TypeCode));
+            var mappingType = TypeFactory.GetFor(typeof (TypeCode));
 
             Assert.That(mappingType, Is.TypeOf<EnumType>());
         }
@@ -77,7 +77,7 @@ namespace FluentLucene.Tests.Materialize
                 .TypeOf<TypeNotSupportedException>()
                 .With.Message.StringMatching("IAsyncResult");
 
-            Assert.That(() => TypeProvider.GetFor(typeof(IAsyncResult)), expected);
+            Assert.That(() => TypeFactory.GetFor(typeof(IAsyncResult)), expected);
         }
 
         [Test]
@@ -87,7 +87,7 @@ namespace FluentLucene.Tests.Materialize
             {
                 var clrType = type;
 
-                var mappingType = TypeProvider.GetFor(clrType);
+                var mappingType = TypeFactory.GetFor(clrType);
 
                 Assert.That(mappingType, Is.Not.Null);
             }

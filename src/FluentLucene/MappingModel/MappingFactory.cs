@@ -10,11 +10,11 @@ namespace FluentLucene.MappingModel
     /// </summary>
     internal class MappingFactory : IMappingFactory
     {
-        private readonly ITypeProvider TypeProvider;
+        private readonly ITypeFactory TypeFactory;
 
-        public MappingFactory(ITypeProvider typeProvider)
+        public MappingFactory(ITypeFactory typeFactory)
         {
-            TypeProvider = typeProvider;
+            TypeFactory = typeFactory;
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace FluentLucene.MappingModel
             identity.Name = builder.FieldName ?? builder.Member.Name;
 
             // Find the mapping type
-            identity.MappingType = TypeProvider.GetFor(builder.Member.MemberType);
+            identity.MappingType = TypeFactory.GetFor(builder.Member.MemberType);
 
             // Return the newly created identity
             return identity;
@@ -79,7 +79,7 @@ namespace FluentLucene.MappingModel
             field.Store = builder.Stored.Store ?? map.Storage.Store ?? FieldStore.Yes;
 
             // Find the mapping type
-            field.MappingType = TypeProvider.GetFor(builder.Member.MemberType);
+            field.MappingType = TypeFactory.GetFor(builder.Member.MemberType);
 
             // Return the newly created field
             return field;

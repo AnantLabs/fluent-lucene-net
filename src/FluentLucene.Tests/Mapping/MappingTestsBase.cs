@@ -9,14 +9,14 @@ namespace FluentLucene.Tests.Mapping
 {
     internal abstract class MappingTestsBase
     {
-        protected Mock<ITypeProvider> TypeProviderMock;
+        protected Mock<ITypeFactory> TypeFactoryMock;
         private IMappingFactory MappingFactory;
 
         [SetUp]
         public void SetUp()
         {
-            TypeProviderMock = new Mock<ITypeProvider>();
-            MappingFactory = new MappingFactory(TypeProviderMock.Object);
+            TypeFactoryMock = new Mock<ITypeFactory>();
+            MappingFactory = new MappingFactory(TypeFactoryMock.Object);
         }
 
         protected SearchMap<SampleDocument> GetMappings(Action<SearchMap<SampleDocument>> mappings) 

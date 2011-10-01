@@ -5,16 +5,16 @@ using FluentLucene.Types;
 namespace FluentLucene.Materialize
 {
     /// <summary>
-    /// Implementation of a provider for different mapping types
+    /// Implementation of a factorys for different mapping types
     /// </summary>
-    internal class TypeProvider : ITypeProvider
+    internal class TypeFactory : ITypeFactory
     {
         /// <summary>
         /// Contains default mappings for what is supported natively by FluentLucene
         /// </summary>
         private readonly IDictionary<Type, Func<Type, IType>> NativeTypes = new Dictionary<Type, Func<Type, IType>>(); 
 
-        public TypeProvider()
+        public TypeFactory()
         {
             RegisterNativeTypes();
         }

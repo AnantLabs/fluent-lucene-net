@@ -70,10 +70,10 @@ namespace FluentLucene.Tests.Mapping
         }
 
         [Test]
-        public void Id_IsAnyType_CallsTypeProviderToGetType()
+        public void Id_IsAnyType_CallsTypeFactoryToGetType()
         {
             var map = GetMappings(m => m.Id(x => x.Id));
-            TypeProviderMock.Setup(x => x.GetFor(typeof (Int32))).Returns(new Int64Type());
+            TypeFactoryMock.Setup(x => x.GetFor(typeof (Int32))).Returns(new Int64Type());
 
             var model = ToMappingModel(map);
 

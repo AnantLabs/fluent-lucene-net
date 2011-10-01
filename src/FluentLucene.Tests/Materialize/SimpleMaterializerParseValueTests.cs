@@ -11,10 +11,17 @@ namespace FluentLucene.Tests.Materialize
     [TestFixture]
     public class SimpleMaterializerParseValueTests
     {
+        private SimpleMaterializer Materializer;
+
+        [SetUp]
+        public void SetUp()
+        {
+            Materializer = new SimpleMaterializer(new EntityActivator(), new TypeFactory());
+        }
+
         private void AssertParseValue<T>(string stringValue, T expected)
         {
-            var materializer = new SimpleMaterializer();
-            var actual = materializer.ParseValue(stringValue, typeof(T));
+            var actual = Materializer.ParseValue(stringValue, typeof(T));
 
             Assert.That(actual, Is.TypeOf<T>());
             Assert.That(actual, Is.EqualTo(expected));
@@ -29,7 +36,7 @@ namespace FluentLucene.Tests.Materialize
         [Test]
         public void ParseValue_NullableWithValue_ReturnsValue()
         {
-            var actual = new SimpleMaterializer().ParseValue("15", typeof (int?));
+            var actual = Materializer.ParseValue("15", typeof(int?));
 
             Assert.That(actual, Is.TypeOf<int>().Or.TypeOf<int?>());
             Assert.That(actual, Is.EqualTo(15));
@@ -38,7 +45,7 @@ namespace FluentLucene.Tests.Materialize
         [Test]
         public void ParseValue_NullableNull_ReturnsNull()
         {
-            var actual = new SimpleMaterializer().ParseValue(null, typeof(int?));
+            var actual = Materializer.ParseValue(null, typeof(int?));
 
             Assert.That(actual, Is.Null);
         }
@@ -159,8 +166,7 @@ namespace FluentLucene.Tests.Materialize
         public void ParseValue_UnsupportedType_ThrowsNotSupportedException()
         {
             Assert.Throws<NotSupportedException>(
-                () => new SimpleMaterializer().ParseValue("http://www.example.com", typeof (Uri)));
+                () => Materializer.ParseValue("http://www.example.com", typeof(Uri)));
         }
-
     }
 }

@@ -22,7 +22,7 @@ namespace FluentLucene.Tests.Materialize
         [SetUp]
         public void SetUp()
         {
-            Materializer = new SimpleMaterializer();
+            Materializer = new SimpleMaterializer(new EntityActivator(), new TypeFactory());
         }
 
         [Test]

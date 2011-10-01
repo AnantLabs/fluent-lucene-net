@@ -4,9 +4,9 @@ using FluentLucene.Types;
 namespace FluentLucene.Materialize
 {
     /// <summary>
-    /// Represents a provider for mapping types
+    /// Represents a factory for mapping types
     /// </summary>
-    internal interface ITypeProvider
+    internal interface ITypeFactory
     {
         /// <summary>
         /// Gets a mapping for the given .NET type

@@ -81,11 +81,12 @@
     <Compile Include="Mapping\Resolution\SimpleMappingResolverBase.cs" />
     <Compile Include="Mapping\SortBuilder.cs" />
     <Compile Include="Mapping\StoreBuilder.cs" />
-    <Compile Include="Materialize\ITypeProvider.cs" />
+    <Compile Include="Materialize\IEntityActivator.cs" />
+    <Compile Include="Materialize\ITypeFactory.cs" />
     <Compile Include="Materialize\SimpleMaterializer.cs" />
     <Compile Include="Materialize\EntityActivator.cs" />
     <Compile Include="Materialize\IMaterializer.cs" />
-    <Compile Include="Materialize\TypeProvider.cs" />
+    <Compile Include="Materialize\TypeFactory.cs" />
     <Compile Include="Messages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

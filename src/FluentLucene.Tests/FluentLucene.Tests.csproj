@@ -61,7 +61,7 @@
     <Compile Include="Materialize\SimpleMaterializerParseValueTests.cs" />
     <Compile Include="Materialize\SimpleMaterializerTests.cs" />
     <Compile Include="TestUtils\SupportedTypes.cs" />
-    <Compile Include="Materialize\TypeProviderTests.cs" />
+    <Compile Include="Materialize\TypeFactoryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\ConvertLexTests.cs">
       <SubType>Code</SubType>

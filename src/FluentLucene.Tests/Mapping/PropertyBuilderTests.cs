@@ -450,10 +450,10 @@ namespace FluentLucene.Tests.Mapping
         }
 
         [Test]
-        public void Map_IsAnyType_CallsTypeProviderToGetType()
+        public void Map_IsAnyType_CallsTypeFactoryToGetType()
         {
             var map = GetMappings(m => m.Map(x => x.StringValue));
-            TypeProviderMock.Setup(x => x.GetFor(typeof(string))).Returns(new Int64Type());
+            TypeFactoryMock.Setup(x => x.GetFor(typeof(string))).Returns(new Int64Type());
             var model = ToMappingModel(map);
             var field = model.Fields.Single();
 

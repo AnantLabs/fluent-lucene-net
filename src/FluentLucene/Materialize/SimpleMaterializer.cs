@@ -10,7 +10,14 @@ namespace FluentLucene.Materialize
     /// </summary>
     internal class SimpleMaterializer : IMaterializer
     {
-        private readonly EntityActivator Activator = new EntityActivator();
+        private readonly IEntityActivator Activator;
+        private readonly ITypeFactory TypeFactory;
+
+        public SimpleMaterializer(IEntityActivator activator, ITypeFactory typeFactory)
+        {
+            Activator = activator;
+            TypeFactory = typeFactory;
+        }
 
         /// <summary>
         /// Materializes an entity from mappings and a given document
