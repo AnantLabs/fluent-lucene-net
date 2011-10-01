@@ -1,12 +1,23 @@
 ﻿using System;
 using FluentLucene.Mapping;
 using FluentLucene.MappingModel;
+using FluentLucene.Materialize;
+using Moq;
+using NUnit.Framework;
 
 namespace FluentLucene.Tests.Mapping
 {
     internal abstract class MappingTestsBase
     {
-        private readonly IMappingFactory MappingFactory = new MappingFactory();
+        protected Mock<ITypeProvider> TypeProviderMock;
+        private IMappingFactory MappingFactory;
+
+        [SetUp]
+        public void SetUp()
+        {
+            TypeProviderMock = new Mock<ITypeProvider>();
+            MappingFactory = new MappingFactory(TypeProviderMock.Object);
+        }
 
         protected SearchMap<SampleDocument> GetMappings(Action<SearchMap<SampleDocument>> mappings) 
         {

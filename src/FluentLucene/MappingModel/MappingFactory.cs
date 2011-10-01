@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using FluentLucene.Mapping;
+using FluentLucene.Materialize;
 using Lucene.Net.Analysis.Standard;
 
 namespace FluentLucene.MappingModel
@@ -9,6 +10,13 @@ namespace FluentLucene.MappingModel
     /// </summary>
     internal class MappingFactory : IMappingFactory
     {
+        private readonly ITypeProvider TypeProvider;
+
+        public MappingFactory(ITypeProvider typeProvider)
+        {
+            TypeProvider = typeProvider;
+        }
+
         /// <summary>
         /// Creates mappings for a document given a search map
         /// </summary>
@@ -44,6 +52,9 @@ namespace FluentLucene.MappingModel
             // Set additionnal values
             identity.Name = builder.FieldName ?? builder.Member.Name;
 
+            // Find the mapping type
+            identity.MappingType = TypeProvider.GetFor(builder.Member.MemberType);
+
             // Return the newly created identity
             return identity;
         }
@@ -66,6 +77,9 @@ namespace FluentLucene.MappingModel
             field.IsSortable = builder.IsSortable ?? map.Sortable.IsSortable ?? false;
             field.Name = builder.FieldName ?? builder.Member.Name;
             field.Store = builder.Stored.Store ?? map.Storage.Store ?? FieldStore.Yes;
+
+            // Find the mapping type
+            field.MappingType = TypeProvider.GetFor(builder.Member.MemberType);
 
             // Return the newly created field
             return field;

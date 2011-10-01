@@ -50,6 +50,7 @@
     <Compile Include="Infrastructure\IServiceLocator.cs" />
     <Compile Include="Infrastructure\ServiceLocator.cs" />
     <Compile Include="MappingModel\DocumentMapping.cs" />
+    <Compile Include="MappingModel\FieldLikeMappingBase.cs" />
     <Compile Include="MappingModel\FieldMapping.cs" />
     <Compile Include="MappingModel\IdentityMapping.cs" />
     <Compile Include="MappingModel\IFieldLikeMapping.cs" />
@@ -79,9 +80,11 @@
     <Compile Include="Mapping\Resolution\SimpleMappingResolverBase.cs" />
     <Compile Include="Mapping\SortBuilder.cs" />
     <Compile Include="Mapping\StoreBuilder.cs" />
+    <Compile Include="Materialize\ITypeProvider.cs" />
     <Compile Include="Materialize\SimpleMaterializer.cs" />
     <Compile Include="Materialize\EntityActivator.cs" />
     <Compile Include="Materialize\IMaterializer.cs" />
+    <Compile Include="Materialize\TypeProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Mapping\SearchMap.cs" />
     <Compile Include="Types\BooleanType.cs" />

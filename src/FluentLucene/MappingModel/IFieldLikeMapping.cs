@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentLucene.Types;
 
 namespace FluentLucene.MappingModel
 {
@@ -30,5 +31,10 @@ namespace FluentLucene.MappingModel
         /// Gets the name of the field
         /// </summary>
         string Name { get; }
+
+        /// <summary>
+        /// Gets the mapping type, used to map between .NET types and how they are indexed and stored
+        /// </summary>
+        IType MappingType { get; }
     }
 }

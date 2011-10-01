@@ -1,4 +1,5 @@
 using System;
+using FluentLucene.Types;
 using NUnit.Framework;
 
 namespace FluentLucene.Tests.Mapping
@@ -66,6 +67,17 @@ namespace FluentLucene.Tests.Mapping
             var map = GetMappings(m => m.Id(x => x.Id));
 
             Assert.Throws<InvalidOperationException>(() => map.Id(x => x.StringValue));
+        }
+
+        [Test]
+        public void Id_IsAnyType_CallsTypeProviderToGetType()
+        {
+            var map = GetMappings(m => m.Id(x => x.Id));
+            TypeProviderMock.Setup(x => x.GetFor(typeof (Int32))).Returns(new Int64Type());
+
+            var model = ToMappingModel(map);
+
+            Assert.That(model.Identity.MappingType, Is.TypeOf<Int64Type>());
         }
     }
 }

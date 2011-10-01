@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using FluentLucene.Mapping;
+using FluentLucene.Types;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Standard;
 using NUnit.Framework;
@@ -446,6 +447,17 @@ namespace FluentLucene.Tests.Mapping
             field.SetValue(target, "This is new");
 
             Assert.That(target.FieldInternal, Is.EqualTo("This is new"));
+        }
+
+        [Test]
+        public void Map_IsAnyType_CallsTypeProviderToGetType()
+        {
+            var map = GetMappings(m => m.Map(x => x.StringValue));
+            TypeProviderMock.Setup(x => x.GetFor(typeof(string))).Returns(new Int64Type());
+            var model = ToMappingModel(map);
+            var field = model.Fields.Single();
+
+            Assert.That(field.MappingType, Is.TypeOf<Int64Type>());
         }
     }
 }
