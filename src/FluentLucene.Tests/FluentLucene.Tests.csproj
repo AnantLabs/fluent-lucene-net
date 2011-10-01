@@ -60,6 +60,7 @@
     <Compile Include="Mapping\SortBuilderTests.cs" />
     <Compile Include="Materialize\SimpleMaterializerParseValueTests.cs" />
     <Compile Include="Materialize\SimpleMaterializerTests.cs" />
+    <Compile Include="Search\InterfaceExperimentation.cs" />
     <Compile Include="TestUtils\SupportedTypes.cs" />
     <Compile Include="Materialize\TypeFactoryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

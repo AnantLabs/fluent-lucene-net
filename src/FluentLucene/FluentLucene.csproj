@@ -50,6 +50,7 @@
     <Compile Include="Infrastructure\ComponentResolutionException.cs" />
     <Compile Include="Infrastructure\IServiceLocator.cs" />
     <Compile Include="Infrastructure\ServiceLocator.cs" />
+    <Compile Include="ILuceneSession.cs" />
     <Compile Include="MappingModel\DocumentMapping.cs" />
     <Compile Include="MappingModel\FieldLikeMappingBase.cs" />
     <Compile Include="MappingModel\FieldMapping.cs" />
@@ -94,6 +95,9 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Mapping\SearchMap.cs" />
+    <Compile Include="Search\ISearchOver.cs" />
+    <Compile Include="Search\ISearchOverBetween.cs" />
+    <Compile Include="Search\ISearchOverMatch.cs" />
     <Compile Include="TypeNotSupportedException.cs" />
     <Compile Include="Types\BooleanType.cs" />
     <Compile Include="Types\ByteType.cs" />
@@ -128,6 +132,7 @@
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
