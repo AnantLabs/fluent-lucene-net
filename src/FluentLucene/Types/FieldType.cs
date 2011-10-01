@@ -43,6 +43,11 @@ namespace FluentLucene.Types
         public Type FieldableType { get { return typeof (Field); } }
 
         /// <summary>
+        /// Gets the .NET type that is supported by this mapping type
+        /// </summary>
+        public Type ClrType { get { return typeof (T); } }
+
+        /// <summary>
         /// Gets whether or not values set using this type are lexicographically ordered. That means, whether or
         /// not this type produces fields that are sutable for sorting and for range queries.
         /// </summary>

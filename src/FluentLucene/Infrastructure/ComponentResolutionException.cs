@@ -12,12 +12,14 @@ namespace FluentLucene.Infrastructure
         public ComponentResolutionError Error { get; private set; }
         public ComponentResolutionError RootCause { get; private set; }
 
-        public ComponentResolutionException(string message, ComponentResolutionError error) : base(message)
+        public ComponentResolutionException(string message, ComponentResolutionError error) 
+            : base(message)
         {
             Error = RootCause = error;
         }
 
-        public ComponentResolutionException(string message, Exception inner, ComponentResolutionError error) : base(FormatMessage(message, inner), inner)
+        public ComponentResolutionException(string message, Exception inner, ComponentResolutionError error) 
+            : base(FormatMessage(message, inner), inner)
         {
             Error = error;
 
@@ -45,28 +47,28 @@ namespace FluentLucene.Infrastructure
         public static ComponentResolutionException NotRegistered(Type type)
         {
             throw new ComponentResolutionException(
-                    string.Format("Unable to resolve type {0}. The component was not registered.", type),
+                    string.Format(Messages.ComponentNotRegistered1, type),
                     ComponentResolutionError.NotRegistered);
         }
 
         public static ComponentResolutionException AlreadyRegistered(Type type)
         {
             throw new ComponentResolutionException(
-                    string.Format("The type {0} was already registered", type),
+                    string.Format(Messages.ComponentAlreadyRegistered1, type),
                     ComponentResolutionError.AlreadyRegistered);
         }
 
         public static ComponentResolutionException ConstructorNotFound(Type type)
         {
             throw new ComponentResolutionException(
-                    string.Format("Unable to find a suitable constructor for type {0}", type),
+                    string.Format(Messages.ConstructorNotFound1, type),
                     ComponentResolutionError.ConstructorNotFound);
         }
 
         public static ComponentResolutionException DependencyResolution(Type type, Exception innerException)
         {
             throw new ComponentResolutionException(
-                string.Format("Unable to resolve dependencies for {0}", type),
+                string.Format(Messages.ComponentDependencyResolution1, type),
                 innerException,
                 ComponentResolutionError.DependencyResolution);
         }
@@ -74,7 +76,7 @@ namespace FluentLucene.Infrastructure
         public static ComponentResolutionException CircularDependency(Type type, Type dependency)
         {
             return new ComponentResolutionException(
-                FormatMessage(string.Format("A circular dependency was detected within {0}", type), dependency.ToString()),
+                FormatMessage(string.Format(Messages.ComponentCircularDependency1, type), dependency.ToString()),
                 ComponentResolutionError.CircularDependency);
         }
     }

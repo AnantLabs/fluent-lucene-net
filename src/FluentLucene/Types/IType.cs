@@ -46,5 +46,10 @@ namespace FluentLucene.Types
         /// not this type produces fields that are sutable for sorting and for range queries.
         /// </summary>
         bool IsLexicographicallyOrdered { get; }
+
+        /// <summary>
+        /// Gets the .NET type that is supported by this mapping type
+        /// </summary>
+        Type ClrType { get; }
     }
 }

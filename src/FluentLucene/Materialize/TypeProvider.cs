@@ -9,36 +9,14 @@ namespace FluentLucene.Materialize
     /// </summary>
     internal class TypeProvider : ITypeProvider
     {
-        private readonly IDictionary<Type, IType> Types = new Dictionary<Type, IType>(); 
+        /// <summary>
+        /// Contains default mappings for what is supported natively by FluentLucene
+        /// </summary>
+        private readonly IDictionary<Type, Func<Type, IType>> NativeTypes = new Dictionary<Type, Func<Type, IType>>(); 
 
         public TypeProvider()
         {
-            
-        }
-
-        private void RegisterTypes()
-        {
-            Register<bool>(new BooleanType());
-            Register<byte>(new ByteType());
-            Register<char>(new CharType());
-            Register<DateTime>(new DateTimeType());
-            Register<decimal>(new DecimalType());
-            Register<double>(new DoubleType());
-            Register<short>(new Int16Type());
-            Register<int>(new Int32Type());
-            Register<long>(new Int64Type());
-            Register<sbyte>(new SByteType());
-            Register<float>(new SingleType());
-            Register<string>(new StringType());
-            Register<TimeSpan>(new TimeSpanType());
-            Register<ushort>(new Int16Type());
-            Register<uint>(new Int32Type());
-            Register<ulong>(new Int64Type());
-        }
-
-        private void Register<T>(IType mappingType)
-        {
-            Types.Add(typeof(T), mappingType);
+            RegisterNativeTypes();
         }
 
         /// <summary>
@@ -48,7 +26,57 @@ namespace FluentLucene.Materialize
         /// <returns>The mapping type, or null</returns>
         public IType GetFor(Type type)
         {
-            throw new NotImplementedException();
+            var knownType = type;
+
+            // The type is a nullable, get the underlying type
+            if (type.IsGenericType && Equals(type.GetGenericTypeDefinition(), typeof(Nullable<>)))
+            {
+                knownType = Nullable.GetUnderlyingType(type);
+            }
+
+            // Try and get a factory method for natively supported types
+            Func<Type, IType> factoryMethod;
+            if (NativeTypes.TryGetValue(knownType, out factoryMethod))
+            {
+                // The type is natively supported
+                return factoryMethod(knownType);
+            }
+
+            // If the type is an enum, get the EnumType
+            if (knownType.IsEnum)
+            {
+                return NativeTypes[typeof(Enum)](knownType);
+            }
+
+            throw new TypeNotSupportedException(string.Format(Messages.TypeNotSupported1, type));
+        }
+
+        private void RegisterNativeTypes()
+        {
+            Register<bool>(t => new BooleanType());
+            Register<byte>(t => new ByteType());
+            Register<char>(t => new CharType());
+            Register<decimal>(t => new DecimalType());
+            Register<double>(t => new DoubleType());
+            Register<short>(t => new Int16Type());
+            Register<int>(t => new Int32Type());
+            Register<long>(t => new Int64Type());
+            Register<sbyte>(t => new SByteType());
+            Register<float>(t => new SingleType());
+            Register<string>(t => new StringType());
+            Register<ushort>(t => new UInt16Type());
+            Register<uint>(t => new UInt32Type());
+            Register<ulong>(t => new UInt64Type());
+
+            Register<Enum>(t => new EnumType(t));
+
+            Register<DateTime>(t => new DateTimeType());
+            Register<TimeSpan>(t => new TimeSpanType());
+        }
+
+        private void Register<T>(Func<Type, IType> factoryMethod)
+        {
+            NativeTypes.Add(typeof(T), factoryMethod);
         }
     }
 }
