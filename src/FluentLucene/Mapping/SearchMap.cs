@@ -2,39 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Lucene.Net.Analysis;
-using Lucene.Net.Analysis.Standard;
 
 namespace FluentLucene.Mapping
 {
-    public class Person
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Comment { get; set; }
-    }
-
-    public class PersonMap : SearchMap<Person>
-    {
-        public PersonMap()
-        {
-            Analyzer<StopAnalyzer>();
-            Index.DefaultsTo.Tokenized();
-            Storage.DefaultsTo.Yes();
-            Sortable.DefaultsTo.Sortable();
-
-            Id(x => x.Id);
-
-            Map(x => x.Name).Boost(3)
-                .Analyzer<StandardAnalyzer>()
-                .Field("name")
-                .Indexed.Tokenized()
-                .Stored.Yes()
-                .Sortable();
-
-            Map(x => x.Comment);
-        }
-    }
-
     /// <summary>
     /// Base class for defining search mappings of a given entity 
     /// </summary>

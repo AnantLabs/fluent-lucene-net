@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Diagnostics;
 
 namespace FluentLucene.Infrastructure
@@ -27,7 +28,18 @@ namespace FluentLucene.Infrastructure
         /// Gets the factory method to use in order to create the instance
         /// </summary>
         public Func<object> FactoryMethod { get; private set; }
-        
+
+        private Hashtable parameters;
+
+        /// <summary>
+        /// Gets the parameters to inject manually
+        /// </summary>
+        public Hashtable Parameters
+        {
+            get { return parameters ?? (parameters = new Hashtable()); }
+            private set { parameters = value; }
+        }
+
         /// <summary>
         /// Private constructor.
         /// </summary>
@@ -37,10 +49,11 @@ namespace FluentLucene.Infrastructure
         /// Creates registration for a singleton instance, created only once using dependency injection
         /// </summary>
         /// <param name="type">The type registered</param>
+        /// <param name="parameters">The parameters to inject manually</param>
         /// <returns>The registration</returns>
-        public static ComponentRegistration CreateSingleton(Type type)
+        public static ComponentRegistration CreateSingleton(Type type, Hashtable parameters = null)
         {
-            return new ComponentRegistration { Type = type, Singleton = true };
+            return new ComponentRegistration { Type = type, Singleton = true, Parameters = parameters };
         }
 
         /// <summary>
@@ -48,20 +61,22 @@ namespace FluentLucene.Infrastructure
         /// </summary>
         /// <param name="type">The type registered</param>
         /// <param name="factoryMethod">The factory method used to create instances</param>
+        /// <param name="parameters">The parameters to inject manually</param>
         /// <returns>The registration</returns>
-        public static ComponentRegistration CreateSingleton(Type type, Func<object> factoryMethod)
+        public static ComponentRegistration CreateSingleton(Type type, Func<object> factoryMethod, Hashtable parameters = null)
         {
-            return new ComponentRegistration { Type = type, FactoryMethod = factoryMethod, Singleton = true };
+            return new ComponentRegistration { Type = type, FactoryMethod = factoryMethod, Singleton = true, Parameters = parameters };
         }
 
         /// <summary>
         /// Creates a registration for transient instances, created every time its needed using dependency injection
         /// </summary>
         /// <param name="type">The type registered</param>
+        /// <param name="parameters">The parameters to inject manually</param>
         /// <returns>The registration</returns>
-        public static ComponentRegistration CreateTransient(Type type)
+        public static ComponentRegistration CreateTransient(Type type, Hashtable parameters = null)
         {
-            return new ComponentRegistration { Type = type };
+            return new ComponentRegistration { Type = type, Parameters = parameters };
         }
 
         /// <summary>
@@ -69,10 +84,11 @@ namespace FluentLucene.Infrastructure
         /// </summary>
         /// <param name="type">The type registered</param>
         /// <param name="factoryMethod">The factory method used to create instances</param>
+        /// <param name="parameters">The parameters to inject manually</param>
         /// <returns>The registration</returns>
-        public static ComponentRegistration CreateTransient(Type type, Func<object> factoryMethod)
+        public static ComponentRegistration CreateTransient(Type type, Func<object> factoryMethod, Hashtable parameters = null)
         {
-            return new ComponentRegistration { Type = type, FactoryMethod = factoryMethod };
+            return new ComponentRegistration { Type = type, FactoryMethod = factoryMethod, Parameters = parameters };
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using FluentLucene.Infrastructure;
 using NUnit.Framework;
 
@@ -196,6 +197,39 @@ namespace FluentLucene.Tests.Infrastructure
             Assert.That(invocations, Is.EqualTo(0));
         }
 
+        [Test]
+        public void Get_TransientWithManualParametersForUnregisteredComponent_UsesProvidedParameters()
+        {
+            // Arrange
+            Container.Transient<IA, A>();
+            var parameters = new Hashtable { { "manual", "Injected!" } };
+            Container.Transient<IJ, J>(parameters);
+
+            // Act
+            var actual = Container.Get<IJ>();
+
+            // Assert
+            Assert.That(actual, Is.TypeOf<J>());
+            Assert.That(((J)actual).Manual, Is.EqualTo("Injected!"));
+        }
+
+        [Test]
+        public void Get_TransientWithManualParametersForRegisteredComponent_UsesProvidedParameters()
+        {
+            // Arrange
+            Container.Transient<IA, A>();
+            var a = new A();
+            var parameters = new Hashtable { { "a", a }, { "manual", "Injected!" } };
+            Container.Transient<IJ, J>(parameters);
+
+            // Act
+            var actual = Container.Get<IJ>();
+
+            // Assert
+            Assert.That(actual, Is.TypeOf<J>());
+            Assert.That(( (J)actual ).A, Is.SameAs(a));
+        }
+
         private static void AssertThrowsWithRootCause(Action action, ComponentResolutionError rootCause)
         {
             Assert.That(() => action(),
@@ -242,5 +276,13 @@ namespace FluentLucene.Tests.Infrastructure
 
     public interface IH { }
     public class H : IH { public H(IF f) { } }
+
+    public interface IJ { }
+    public class J : IJ
+    {
+        public J(IA a, string manual) { A = a; Manual = manual; }
+        public IA A { get; private set; }
+        public string Manual { get; private set; }
+    }
     #endregion
 }

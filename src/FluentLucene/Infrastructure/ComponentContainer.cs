@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -27,75 +28,81 @@ namespace FluentLucene.Infrastructure
         /// <summary>
         /// Registers a singleton component, created at most once, when requested.
         /// </summary>
+        /// <param name="parameters">The parameters to inject manually</param>
         /// <typeparam name="T">The type of the component</typeparam>
-        public void Singleton<T>()
+        public void Singleton<T>(Hashtable parameters = null)
         {
-            Singleton<T, T>();
+            Singleton<T, T>(parameters);
         }
 
         /// <summary>
         /// Registers a singleton component, created at most once, when requested.
         /// </summary>
+        /// <param name="parameters">The parameters to inject manually</param>
         /// <typeparam name="TInterface">The type of the interface</typeparam>
         /// <typeparam name="TImplementation">The type of the implementation</typeparam>
-        public void Singleton<TInterface, TImplementation>() where TImplementation : TInterface
+        public void Singleton<TInterface, TImplementation>(Hashtable parameters = null) where TImplementation : TInterface
         {
             // Ensure the type was not already registered
             EnsureNotRegistered(typeof (TInterface));
 
             // Add a registration for that type
-            Registrations.Add(typeof (TInterface), ComponentRegistration.CreateSingleton(typeof (TImplementation)));
+            Registrations.Add(typeof (TInterface), ComponentRegistration.CreateSingleton(typeof (TImplementation), parameters));
         }
 
         /// <summary>
         /// Registers a singleton component, created at most once when requested, using the provided factory method
         /// </summary>
         /// <param name="factoryMethod">The factory method to use in order to create the component</param>
+        /// <param name="parameters">The parameters to inject manually</param>
         /// <typeparam name="T">The type of the component</typeparam>
-        public void Singleton<T>(Func<T> factoryMethod)
+        public void Singleton<T>(Func<T> factoryMethod, Hashtable parameters = null)
         {
             // Ensure the type was not already registered
             EnsureNotRegistered(typeof(T));
 
             // Add a registration for that type
-            Registrations.Add(typeof(T), ComponentRegistration.CreateSingleton(typeof(T), () => factoryMethod()));
+            Registrations.Add(typeof(T), ComponentRegistration.CreateSingleton(typeof(T), () => factoryMethod(), parameters));
         }
 
         /// <summary>
         /// Registers a transient component, to be created each time it is requested
         /// </summary>
+        /// <param name="parameters">The parameters to inject manually</param>
         /// <typeparam name="T">The type of the component</typeparam>
-        public void Transient<T>()
+        public void Transient<T>(Hashtable parameters = null)
         {
-            Transient<T, T>();
+            Transient<T, T>(parameters);
         }
 
         /// <summary>
         /// Registers a transient component, to be created each time it is requested
         /// </summary>
+        /// <param name="parameters">The parameters to inject manually</param>
         /// <typeparam name="TInterface">The type of the interface</typeparam>
         /// <typeparam name="TImplementation">The type of the implementation</typeparam>
-        public void Transient<TInterface, TImplementation>() where TImplementation : TInterface
+        public void Transient<TInterface, TImplementation>(Hashtable parameters = null) where TImplementation : TInterface
         {
             // Ensure the type was not already registered
             EnsureNotRegistered(typeof(TInterface));
 
             // Add a registration for that type
-            Registrations.Add(typeof(TInterface), ComponentRegistration.CreateTransient(typeof(TImplementation)));
+            Registrations.Add(typeof(TInterface), ComponentRegistration.CreateTransient(typeof(TImplementation), parameters));
         }
 
         /// <summary>
         /// Registers a transient component, to be created each time it is requested using the provided factory method
         /// </summary>
         /// <param name="factoryMethod">The factory method to use in order to create the component</param>
+        /// <param name="parameters">The parameters to inject manually</param>
         /// <typeparam name="T">The type of the component</typeparam>
-        public void Transient<T>(Func<T> factoryMethod)
+        public void Transient<T>(Func<T> factoryMethod, Hashtable parameters = null)
         {
             // Ensure the type was not already registered
             EnsureNotRegistered(typeof(T));
 
             // Add a registration for that type
-            Registrations.Add(typeof(T), ComponentRegistration.CreateTransient(typeof(T), () => factoryMethod()));
+            Registrations.Add(typeof(T), ComponentRegistration.CreateTransient(typeof(T), () => factoryMethod(), parameters));
         }
 
         /// <summary>
@@ -206,8 +213,7 @@ namespace FluentLucene.Infrastructure
                     throw ComponentResolutionException.ConstructorNotFound(type);
                 }
 
-                // Resolve all of the dependencies
-                var dependencies = ResolveDependencies(ctor).ToArray();
+                var dependencies = ctor.GetParameters().ToList();
 
                 // Create a dictionary of seen type that are not yet resolved
                 pendingResolutions = pendingResolutions ?? new Dictionary<Type, ComponentRegistration>();
@@ -216,27 +222,41 @@ namespace FluentLucene.Infrastructure
                 pendingResolutions.Add(type, registration);
 
                 // The list of resolved dependencies
-                var resolvedDependencies = new object[dependencies.Length];
+                var resolvedDependencies = new object[dependencies.Count];
                 var currentDependencyIndex = 0;
 
                 // For every dependency
                 foreach (var dependency in dependencies)
                 {
-                    // Ensure there is no circular dependency
-                    if (pendingResolutions.ContainsKey(dependency))
+                    // Try and get the parameter from the manual parameter list
+                    var argument = registration.Parameters[dependency.Name];
+                    if (argument != null && dependency.ParameterType.IsAssignableFrom(argument.GetType()))
                     {
-                        throw ComponentResolutionException.CircularDependency(type, dependency);
+                        resolvedDependencies[currentDependencyIndex++] = argument;
                     }
+                    else
+                    {
+                        // The dependency could not be resolved with manually provided parameters.
+                        // Resolve it using other components registered
 
-                    try
-                    {
-                        // Create an instance of the dependency recursively
-                        resolvedDependencies[currentDependencyIndex++] = GetInternal(dependency, pendingResolutions);
-                    }
-                    catch (ComponentResolutionException ex)
-                    {
-                        // Wrap an throw the exception
-                        throw ComponentResolutionException.DependencyResolution(type, ex);
+                        var dependencyType = dependency.ParameterType;
+
+                        // Ensure there is no circular dependency
+                        if (pendingResolutions.ContainsKey(dependencyType))
+                        {
+                            throw ComponentResolutionException.CircularDependency(type, dependencyType);
+                        }
+
+                        try
+                        {
+                            // Create an instance of the dependency recursively
+                            resolvedDependencies[currentDependencyIndex++] = GetInternal(dependencyType, pendingResolutions);
+                        }
+                        catch (ComponentResolutionException ex)
+                        {
+                            // Wrap an throw the exception
+                            throw ComponentResolutionException.DependencyResolution(type, ex);
+                        }
                     }
                 }
 
@@ -275,16 +295,6 @@ namespace FluentLucene.Infrastructure
             }
 
             return ctor;
-        }
-
-        /// <summary>
-        /// Resolve the dependencies of a given type, for a given constructor
-        /// </summary>
-        /// <param name="ctor">The constuctor info</param>
-        /// <returns>A sequence of dependencies for that type</returns>
-        private static IEnumerable<Type> ResolveDependencies(ConstructorInfo ctor)
-        {
-            return ctor.GetParameters().Select(x => x.ParameterType);
         }
     }
 }
