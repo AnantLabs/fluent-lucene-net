@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentLucene.Infrastructure;
 using FluentLucene.Materialize;
 using FluentLucene.Types;
 using Lucene.Net.Documents;
@@ -19,7 +20,7 @@ namespace FluentLucene.Tests.Materialize
         [SetUp]
         public void SetUp()
         {
-            Materializer = new SimpleMaterializer(new EntityActivator(), new TypeFactory());
+            Materializer = new SimpleMaterializer(new EntityActivator(), new TypeFactory(new ServiceLocator()));
         }
 
         private Field CreateField(string stringValue)

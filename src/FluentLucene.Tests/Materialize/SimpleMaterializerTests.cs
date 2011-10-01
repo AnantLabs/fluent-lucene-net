@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using FluentLucene.Infrastructure;
 using FluentLucene.Mapping;
 using FluentLucene.MappingModel;
 using FluentLucene.Materialize;
@@ -22,7 +23,7 @@ namespace FluentLucene.Tests.Materialize
         [SetUp]
         public void SetUp()
         {
-            Materializer = new SimpleMaterializer(new EntityActivator(), new TypeFactory());
+            Materializer = new SimpleMaterializer(new EntityActivator(), new TypeFactory(new ServiceLocator()));
         }
 
         [Test]

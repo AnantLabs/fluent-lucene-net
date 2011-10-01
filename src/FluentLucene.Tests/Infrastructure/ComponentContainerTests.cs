@@ -198,7 +198,7 @@ namespace FluentLucene.Tests.Infrastructure
         }
 
         [Test]
-        public void Get_TransientWithManualParametersForUnregisteredComponent_UsesProvidedParameters()
+        public void Get_WithDefaultParametersForUnregisteredComponent_UsesProvidedParameters()
         {
             // Arrange
             Container.Transient<IA, A>();
@@ -210,11 +210,11 @@ namespace FluentLucene.Tests.Infrastructure
 
             // Assert
             Assert.That(actual, Is.TypeOf<J>());
-            Assert.That(((J)actual).Manual, Is.EqualTo("Injected!"));
+            Assert.That(( (J)actual ).Manual, Is.EqualTo("Injected!"));
         }
 
         [Test]
-        public void Get_TransientWithManualParametersForRegisteredComponent_UsesProvidedParameters()
+        public void Get_WithDefaultParametersForRegisteredComponent_UsesProvidedParameters()
         {
             // Arrange
             Container.Transient<IA, A>();
@@ -224,6 +224,54 @@ namespace FluentLucene.Tests.Infrastructure
 
             // Act
             var actual = Container.Get<IJ>();
+
+            // Assert
+            Assert.That(actual, Is.TypeOf<J>());
+            Assert.That(( (J)actual ).A, Is.SameAs(a));
+        }
+
+        [Test]
+        public void Get_WithManualParametersForUnregisteredComponent_UsesProvidedParameters()
+        {
+            // Arrange
+            Container.Transient<IA, A>();
+            Container.Transient<IJ, J>();
+
+            // Act
+            var actual = Container.Get<IJ>(new Hashtable { { "manual", "Injected!" } });
+
+            // Assert
+            Assert.That(actual, Is.TypeOf<J>());
+            Assert.That(((J)actual).Manual, Is.EqualTo("Injected!"));
+        }
+
+        [Test]
+        public void Get_WithManualParametersForRegisteredComponent_UsesProvidedParameters()
+        {
+            // Arrange
+            Container.Transient<IA, A>();
+            var a = new A();
+            Container.Transient<IJ, J>();
+
+            // Act
+            var actual = Container.Get<IJ>(new Hashtable { { "a", a }, { "manual", "Injected!" } });
+
+            // Assert
+            Assert.That(actual, Is.TypeOf<J>());
+            Assert.That(( (J)actual ).A, Is.SameAs(a));
+        }
+
+        [Test]
+        public void Get_WithManualAndDefaultParameters_ManuelOverridesDefault()
+        {
+            // Arrange
+            Container.Transient<IA, A>();
+            var wrongA = new A();
+            var a = new A();
+            Container.Transient<IJ, J>(new Hashtable { { "a", wrongA }, { "manual", "Injected!" } });
+
+            // Act
+            var actual = Container.Get<IJ>(new Hashtable { { "a", a } });
 
             // Assert
             Assert.That(actual, Is.TypeOf<J>());

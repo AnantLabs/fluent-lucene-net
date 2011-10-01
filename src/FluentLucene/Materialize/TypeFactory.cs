@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using FluentLucene.Infrastructure;
 using FluentLucene.Types;
 
 namespace FluentLucene.Materialize
@@ -12,10 +14,13 @@ namespace FluentLucene.Materialize
         /// <summary>
         /// Contains default mappings for what is supported natively by FluentLucene
         /// </summary>
-        private readonly IDictionary<Type, Func<Type, IType>> NativeTypes = new Dictionary<Type, Func<Type, IType>>(); 
+        private readonly IDictionary<Type, Type> NativeTypes = new Dictionary<Type, Type>();
 
-        public TypeFactory()
+        private readonly IServiceLocator ServiceLocator;
+
+        public TypeFactory(IServiceLocator serviceLocator)
         {
+            ServiceLocator = serviceLocator;
             RegisterNativeTypes();
         }
 
@@ -35,17 +40,17 @@ namespace FluentLucene.Materialize
             }
 
             // Try and get a factory method for natively supported types
-            Func<Type, IType> factoryMethod;
-            if (NativeTypes.TryGetValue(knownType, out factoryMethod))
+            Type mappingType;
+            if (NativeTypes.TryGetValue(knownType, out mappingType))
             {
                 // The type is natively supported
-                return factoryMethod(knownType);
+                return (IType)ServiceLocator.Get(mappingType);
             }
 
             // If the type is an enum, get the EnumType
             if (knownType.IsEnum)
             {
-                return NativeTypes[typeof(Enum)](knownType);
+                return ServiceLocator.Get<EnumType>(new Hashtable { { "enumType", knownType } });
             }
 
             throw new TypeNotSupportedException(string.Format(Messages.TypeNotSupported1, type));
@@ -53,30 +58,31 @@ namespace FluentLucene.Materialize
 
         private void RegisterNativeTypes()
         {
-            Register<bool>(t => new BooleanType());
-            Register<byte>(t => new ByteType());
-            Register<char>(t => new CharType());
-            Register<decimal>(t => new DecimalType());
-            Register<double>(t => new DoubleType());
-            Register<short>(t => new Int16Type());
-            Register<int>(t => new Int32Type());
-            Register<long>(t => new Int64Type());
-            Register<sbyte>(t => new SByteType());
-            Register<float>(t => new SingleType());
-            Register<string>(t => new StringType());
-            Register<ushort>(t => new UInt16Type());
-            Register<uint>(t => new UInt32Type());
-            Register<ulong>(t => new UInt64Type());
+            Register<bool, BooleanType>();
+            Register<byte, ByteType>();
+            Register<char, CharType>();
+            Register<decimal, DecimalType>();
+            Register<double, DoubleType>();
+            Register<short, Int16Type>();
+            Register<int, Int32Type>();
+            Register<long, Int64Type>();
+            Register<sbyte, SByteType>();
+            Register<float, SingleType>();
+            Register<string, StringType>();
+            Register<ushort, UInt16Type>();
+            Register<uint, UInt32Type>();
+            Register<ulong, UInt64Type>();
 
-            Register<Enum>(t => new EnumType(t));
+            Register<Enum, EnumType>();
 
-            Register<DateTime>(t => new DateTimeType());
-            Register<TimeSpan>(t => new TimeSpanType());
+            Register<DateTime, DateTimeType>();
+            Register<TimeSpan, TimeSpanType>();
         }
 
-        private void Register<T>(Func<Type, IType> factoryMethod)
+        private void Register<TClr, TMapping>()
         {
-            NativeTypes.Add(typeof(T), factoryMethod);
+            NativeTypes.Add(typeof(TClr), typeof(TMapping));
+            ServiceLocator.Container.Transient<TMapping>();
         }
     }
 }

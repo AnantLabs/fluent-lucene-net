@@ -146,21 +146,23 @@ namespace FluentLucene.Infrastructure
         /// <summary>
         /// Get a component of the given type
         /// </summary>
+        /// <param name="parameters">The parameters to inject manually</param>
         /// <typeparam name="T">The type of the component</typeparam>
         /// <returns>The component of the requested type</returns>
-        public T Get<T>()
+        public T Get<T>(Hashtable parameters = null)
         {
-            return (T) GetInternal(typeof (T), null);
+            return (T)GetInternal(typeof(T), null, parameters);
         }
 
         /// <summary>
         /// Get a component of the given type
         /// </summary>
         /// <param name="type">The type of the component</param>
+        /// <param name="parameters">The parameters to inject manually</param>
         /// <returns>The component of the requested type</returns>
-        public object Get(Type type)
+        public object Get(Type type, Hashtable parameters = null)
         {
-            return GetInternal(type, null);
+            return GetInternal(type, null, parameters);
         }
 
         /// <summary>
@@ -169,8 +171,9 @@ namespace FluentLucene.Infrastructure
         /// </summary>
         /// <param name="type">The type of the component</param>
         /// <param name="pendingResolutions">A set of pending resolutions</param>
-        /// <returns></returns>
-        private object GetInternal(Type type, IDictionary<Type, ComponentRegistration> pendingResolutions)
+        /// <param name="parameters">The parameters to inject manually</param>
+        /// <returns>The component of the requested type</returns>
+        private object GetInternal(Type type, IDictionary<Type, ComponentRegistration> pendingResolutions, Hashtable parameters)
         {
             // Get the registration for the given type
             ComponentRegistration registration;
@@ -229,34 +232,47 @@ namespace FluentLucene.Infrastructure
                 foreach (var dependency in dependencies)
                 {
                     // Try and get the parameter from the manual parameter list
-                    var argument = registration.Parameters[dependency.Name];
-                    if (argument != null && dependency.ParameterType.IsAssignableFrom(argument.GetType()))
+                    if (parameters != null)
                     {
-                        resolvedDependencies[currentDependencyIndex++] = argument;
+                        var argument = parameters[dependency.Name];
+                        if (argument != null && dependency.ParameterType.IsAssignableFrom(argument.GetType()))
+                        {
+                            resolvedDependencies[currentDependencyIndex++] = argument;
+                            continue;
+                        }
                     }
-                    else
+
+                    // Try and get the parameter from the default parameter list
+                    if (registration.Parameters != null)
                     {
-                        // The dependency could not be resolved with manually provided parameters.
-                        // Resolve it using other components registered
-
-                        var dependencyType = dependency.ParameterType;
-
-                        // Ensure there is no circular dependency
-                        if (pendingResolutions.ContainsKey(dependencyType))
+                        var argument = registration.Parameters[dependency.Name];
+                        if (argument != null && dependency.ParameterType.IsAssignableFrom(argument.GetType()))
                         {
-                            throw ComponentResolutionException.CircularDependency(type, dependencyType);
+                            resolvedDependencies[currentDependencyIndex++] = argument;
+                            continue;
                         }
+                    }
 
-                        try
-                        {
-                            // Create an instance of the dependency recursively
-                            resolvedDependencies[currentDependencyIndex++] = GetInternal(dependencyType, pendingResolutions);
-                        }
-                        catch (ComponentResolutionException ex)
-                        {
-                            // Wrap an throw the exception
-                            throw ComponentResolutionException.DependencyResolution(type, ex);
-                        }
+                    // The dependency could not be resolved with manually provided parameters.
+                    // Resolve it using other components registered
+
+                    var dependencyType = dependency.ParameterType;
+
+                    // Ensure there is no circular dependency
+                    if (pendingResolutions.ContainsKey(dependencyType))
+                    {
+                        throw ComponentResolutionException.CircularDependency(type, dependencyType);
+                    }
+
+                    try
+                    {
+                        // Create an instance of the dependency recursively
+                        resolvedDependencies[currentDependencyIndex++] = GetInternal(dependencyType, pendingResolutions, null);
+                    }
+                    catch (ComponentResolutionException ex)
+                    {
+                        // Wrap an throw the exception
+                        throw ComponentResolutionException.DependencyResolution(type, ex);
                     }
                 }
 

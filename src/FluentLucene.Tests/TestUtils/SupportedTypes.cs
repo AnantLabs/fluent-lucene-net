@@ -62,7 +62,7 @@ namespace FluentLucene.Tests.TestUtils
         }
 
         /// <summary>
-        /// Gets all supported types
+        /// Gets all supported types. DOES NOT INCLUDE ENUMS.
         /// </summary>
         public static IEnumerable<Type> All
         {
@@ -73,8 +73,7 @@ namespace FluentLucene.Tests.TestUtils
                     NativeTypes, 
                     NullableNativeTypes, 
                     ComplementaryType, 
-                    NullableComplementaryType,
-                    new [] { typeof(Enum) }
+                    NullableComplementaryType
 
                 }.SelectMany(x => x);
             }

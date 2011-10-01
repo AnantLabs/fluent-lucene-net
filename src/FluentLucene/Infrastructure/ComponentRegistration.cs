@@ -29,16 +29,10 @@ namespace FluentLucene.Infrastructure
         /// </summary>
         public Func<object> FactoryMethod { get; private set; }
 
-        private Hashtable parameters;
-
         /// <summary>
         /// Gets the parameters to inject manually
         /// </summary>
-        public Hashtable Parameters
-        {
-            get { return parameters ?? (parameters = new Hashtable()); }
-            private set { parameters = value; }
-        }
+        public Hashtable Parameters { get; private set; }
 
         /// <summary>
         /// Private constructor.

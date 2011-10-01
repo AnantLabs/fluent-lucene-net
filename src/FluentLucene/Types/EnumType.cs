@@ -12,6 +12,10 @@ namespace FluentLucene.Types
 
         private readonly Type Type;
 
+        /// <summary>
+        /// Creates an EnumType by specifying the .NET type of the enum
+        /// </summary>
+        /// <param name="enumType">The type of the enum</param>
         public EnumType(Type enumType)
         {
             Type = enumType;

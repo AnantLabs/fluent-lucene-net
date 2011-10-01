@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FluentLucene.Infrastructure;
 using FluentLucene.Materialize;
 using FluentLucene.Tests.TestUtils;
 using FluentLucene.Types;
@@ -19,7 +20,7 @@ namespace FluentLucene.Tests.Materialize
         [SetUp]
         public void SetUp()
         {
-            TypeFactory = new TypeFactory();
+            TypeFactory = new TypeFactory(new ServiceLocator());
         }
 
         private void AssertAllTypesSupported(IEnumerable<Type> types)
