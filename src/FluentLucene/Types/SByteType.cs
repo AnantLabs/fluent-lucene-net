@@ -10,7 +10,7 @@ namespace FluentLucene.Types
     {
         protected override sbyte GetValueInternal(Field field)
         {
-            return sbyte.Parse(field.StringValue());
+            return sbyte.Parse(field.StringValue(), CultureInfo.InvariantCulture);
         }
 
         protected override void SetValueInternal(Field field, sbyte value)

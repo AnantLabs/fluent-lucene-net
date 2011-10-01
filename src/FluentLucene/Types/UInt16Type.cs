@@ -10,7 +10,7 @@ namespace FluentLucene.Types
     {
         protected override ushort GetValueInternal(Field field)
         {
-            return ushort.Parse(field.StringValue());
+            return ushort.Parse(field.StringValue(), CultureInfo.InvariantCulture);
         }
 
         protected override void SetValueInternal(Field field, ushort value)

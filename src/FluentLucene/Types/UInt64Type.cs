@@ -10,7 +10,7 @@ namespace FluentLucene.Types
     {
         protected override ulong GetValueInternal(Field field)
         {
-            return ulong.Parse(field.StringValue());
+            return ulong.Parse(field.StringValue(), CultureInfo.InvariantCulture);
         }
 
         protected override void SetValueInternal(Field field, ulong value)

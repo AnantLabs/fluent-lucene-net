@@ -10,7 +10,7 @@ namespace FluentLucene.Types
     {
         protected override decimal GetValueInternal(Field field)
         {
-            return decimal.Parse(field.StringValue());
+            return decimal.Parse(field.StringValue(), CultureInfo.InvariantCulture);
         }
 
         protected override void SetValueInternal(Field field, decimal value)

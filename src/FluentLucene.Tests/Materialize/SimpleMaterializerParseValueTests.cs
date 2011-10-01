@@ -1,5 +1,8 @@
 ﻿using System;
 using FluentLucene.Materialize;
+using FluentLucene.Types;
+using Lucene.Net.Documents;
+using Moq;
 using NUnit.Framework;
 
 namespace FluentLucene.Tests.Materialize
@@ -19,9 +22,15 @@ namespace FluentLucene.Tests.Materialize
             Materializer = new SimpleMaterializer(new EntityActivator(), new TypeFactory());
         }
 
+        private Field CreateField(string stringValue)
+        {
+            return new Field("AnyNameWillDo", stringValue, Field.Store.YES, Field.Index.ANALYZED);
+        }
+
         private void AssertParseValue<T>(string stringValue, T expected)
         {
-            var actual = Materializer.ParseValue(stringValue, typeof(T));
+            var field = CreateField(stringValue);
+            var actual = Materializer.ParseValue(field, typeof(T));
 
             Assert.That(actual, Is.TypeOf<T>());
             Assert.That(actual, Is.EqualTo(expected));
@@ -36,16 +45,16 @@ namespace FluentLucene.Tests.Materialize
         [Test]
         public void ParseValue_NullableWithValue_ReturnsValue()
         {
-            var actual = Materializer.ParseValue("15", typeof(int?));
+            var actual = Materializer.ParseValue(CreateField("15"), typeof(int?));
 
             Assert.That(actual, Is.TypeOf<int>().Or.TypeOf<int?>());
             Assert.That(actual, Is.EqualTo(15));
         }
 
         [Test]
-        public void ParseValue_NullableNull_ReturnsNull()
+        public void ParseValue_NullableEmptyString_ReturnsNull()
         {
-            var actual = Materializer.ParseValue(null, typeof(int?));
+            var actual = Materializer.ParseValue(CreateField(""), typeof(int?));
 
             Assert.That(actual, Is.Null);
         }
@@ -165,8 +174,26 @@ namespace FluentLucene.Tests.Materialize
         [Test]
         public void ParseValue_UnsupportedType_ThrowsNotSupportedException()
         {
-            Assert.Throws<NotSupportedException>(
-                () => Materializer.ParseValue("http://www.example.com", typeof(Uri)));
+            var field = CreateField("http://www.example.com");
+
+            Assert.Throws<TypeNotSupportedException>(() => Materializer.ParseValue(field, typeof(Uri)));
+        }
+
+        [Test]
+        public void ParseValue_Always_UsesTypeFactoryToMapTypes()
+        {
+            // Arrange
+            var typeFactoryMock = new Mock<ITypeFactory>();
+            var materializer = new SimpleMaterializer(new EntityActivator(), typeFactoryMock.Object);
+
+            typeFactoryMock.Setup(x => x.GetFor(typeof (int))).Returns(new Int64Type()).Verifiable();
+
+            // Act
+            var value = materializer.ParseValue(CreateField("15"), typeof (int));
+
+            // Assert
+            typeFactoryMock.Verify();
+            Assert.That(value, Is.TypeOf<long>());
         }
     }
 }
